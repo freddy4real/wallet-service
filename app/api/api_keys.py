@@ -15,7 +15,7 @@ async def require_jwt_auth(
     current_user: User = Depends(get_current_user_from_token),
 ) -> User:
     """
-    Require JWT authentication (no API keys allowed).
+    Require JWT authentication.
     
     This is used for API key management endpoints to prevent
     privilege escalation attacks.
