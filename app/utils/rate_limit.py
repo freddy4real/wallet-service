@@ -1,7 +1,7 @@
 from datetime import timedelta
 from functools import wraps
 from fastapi import HTTPException, Request, status
-from app.core.redis import get_redis
+from app.utils.redis import get_redis
 from app.utils.logger import logger
 
 
