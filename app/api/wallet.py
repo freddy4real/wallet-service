@@ -401,11 +401,15 @@ async def transfer_funds(
 
 @router.get("/transactions")
 async def get_transaction_history(
+    limit: int = 50,
     current_user: User = Depends(require_permissions(["read"])),
     db: AsyncSession = Depends(get_db)
 ):
     """
     Get transaction history.
+    
+    Args:
+        limit: Maximum number of transactions to return (default: 50)
     
     Requires JWT or API key with 'read' permission.
     """
@@ -417,7 +421,11 @@ async def get_transaction_history(
             message="Wallet not found"
         )
     
-    transactions = await wallet_service.get_wallet_transactions(db, str(wallet.id))
+    transactions = await wallet_service.get_wallet_transactions(
+        db, 
+        str(wallet.id),
+        limit=limit
+    )
     
     # Format transactions for response
     transactions_data = [
@@ -435,5 +443,5 @@ async def get_transaction_history(
     return success_response(
         status_code=status.HTTP_200_OK,
         message="Transaction history retrieved successfully",
-        data={"transactions": transactions_data}
+        data={"transactions": transactions_data, "count": len(transactions_data)}
     )
