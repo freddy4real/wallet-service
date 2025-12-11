@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import settings
 from app.db.session import init_db, engine
-from app.core.redis import init_redis, close_redis
+from app.utils.redis import init_redis, close_redis
 from app.api import app as api_router
 from app.middleware.correlation import CorrelationIdMiddleware
 from app.middleware.security import SecurityHeadersMiddleware
