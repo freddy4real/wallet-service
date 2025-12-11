@@ -93,7 +93,46 @@ async def rollover_api_key(
             message=str(e)
         )
 
-
+@router.get("", summary="List API Keys", status_code=status.HTTP_200_OK)
+async def list_api_keys(
+    limit: int = 20,
+    current_user: User = Depends(require_jwt_auth),
+    db: AsyncSession = Depends(get_db)
+):
+    """
+    List all API keys for the authenticated user.
+    
+    Args:
+        limit: Maximum number of keys to return (default: 20)
+    
+    Returns API keys ordered by creation date (most recent first).
+    Each key includes: name, permissions, created_at, expires_at, and is_valid status.
+    """
+    api_keys = await api_key_service.list_user_api_keys(
+        db=db,
+        user_id=str(current_user.id),
+        limit=limit
+    )
+    
+    # Format response with is_valid computed field
+    keys_data = [
+        {
+            "id": str(key.id),
+            "name": key.name,
+            "permissions": key.permissions,
+            "created_at": key.created_at.isoformat(),
+            "expires_at": key.expires_at.isoformat(),
+            "is_valid": key.is_valid()
+        }
+        for key in api_keys
+    ]
+    
+    return success_response(
+        status_code=status.HTTP_200_OK,
+        message=f"Retrieved {len(keys_data)} API key(s)",
+        data={"keys": keys_data, "count": len(keys_data)}
+    )
+    
 @router.post("/revoke", summary="Revoke API Key")
 async def revoke_api_key(
     revoke_data: APIKeyRevoke,
