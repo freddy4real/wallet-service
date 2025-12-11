@@ -50,7 +50,7 @@ async def google_login():
     )
 
 
-@router.get("/google/callback", summary="Google Authentication Callback")
+@router.get("/google/callback", summary="Google Authentication Callback", include_in_schema=False)
 async def google_callback(request: Request, db: AsyncSession = Depends(get_db)):
     """Handle Google OAuth callback and return JWT token."""
     code = request.query_params.get("code")
